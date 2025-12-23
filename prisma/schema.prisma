@@ -6,6 +6,7 @@
 
 generator client {
   provider = "prisma-client"
+  output   = "../generated/prisma"
 }
 
 datasource db {
@@ -16,4 +17,13 @@ datasource db {
 model sample {
   id   String @id //primary key
   name String
+}
+
+model Customer {
+  id    String @id
+  name  String
+  email String @unique
+  phone String @unique
+
+  @@map("customers") // Map to "customers" table in the database
 }
