@@ -28,7 +28,7 @@ model Customer {
 }
 
 model Product {
-  id       String @id
+  id       Int    @id
   name     String
   price    Int
   stock    Int
