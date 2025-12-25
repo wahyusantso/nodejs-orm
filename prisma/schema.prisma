@@ -19,12 +19,22 @@ model sample {
 }
 
 model Customer {
-  id    String @id
-  name  String
-  email String @unique
-  phone String @unique
+  id     String  @id
+  name   String
+  email  String  @unique
+  phone  String  @unique
+  wallet Wallet? // One-to-one relation with Wallet and nullable
 
   @@map("customers") // Map to "customers" table in the database
+}
+
+model Wallet {
+  id          String   @id
+  balance     Int
+  customer_id String   @unique
+  customer    Customer @relation(fields: [customer_id], references: [id]) //define relation
+
+  @@map("wallet")
 }
 
 model Product {
