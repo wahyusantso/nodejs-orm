@@ -36,3 +36,10 @@ model Product {
 
   @@map("products")
 }
+
+model Categories {
+  id   Int    @id @default(autoincrement())
+  name String @db.VarChar(100)
+
+  @@map("categories")
+}
