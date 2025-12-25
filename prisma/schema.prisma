@@ -19,13 +19,24 @@ model sample {
 }
 
 model Customer {
-  id     String  @id
-  name   String
-  email  String  @unique
-  phone  String  @unique
-  wallet Wallet? // One-to-one relation with Wallet and nullable
+  id       String    @id
+  name     String
+  email    String    @unique
+  phone    String    @unique
+  wallet   Wallet? // One-to-one relation with Wallet and nullable
+  comments Comment[] // One-to-many relation with Comment
 
   @@map("customers") // Map to "customers" table in the database
+}
+
+model Comment {
+  id          Int      @id @default(autoincrement())
+  title       String
+  description String? //allow nullable
+  customer_id String
+  customer    Customer @relation(fields: [customer_id], references: [id])
+
+  @@map("comments")
 }
 
 model Wallet {
