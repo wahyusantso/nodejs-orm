@@ -25,6 +25,8 @@ model Customer {
   phone    String    @unique
   wallet   Wallet? // One-to-one relation with Wallet and nullable
   comments Comment[] // One-to-many relation with Comment
+  likes    Like[]
+  loves    Product[] @relation("loves") // cara implisit tanpa harus menyebutkan tabel penghubung
 
   @@map("customers") // Map to "customers" table in the database
 }
@@ -49,11 +51,13 @@ model Wallet {
 }
 
 model Product {
-  id       Int    @id
+  id       String     @id
   name     String
   price    Int
   stock    Int
   category String
+  likedBy  Like[]
+  lovedBy  Customer[] @relation("loves")
 
   @@map("products")
 }
@@ -63,4 +67,15 @@ model Categories {
   name String @db.VarChar(100)
 
   @@map("categories")
+}
+
+//table untuk relasi many-to-many antara Customer dan Product
+model Like {
+  customer_id String   @db.VarChar(100)
+  product_id  String   @db.VarChar(100)
+  customer    Customer @relation(fields: [customer_id], references: [id])
+  product     Product  @relation(fields: [product_id], references: [id])
+
+  @@id([customer_id, product_id]) //definisi id lebih dari satu field
+  @@map("Likes")
 }
