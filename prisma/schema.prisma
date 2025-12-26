@@ -1,9 +1,3 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
-// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
-// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
-
 generator client {
   provider = "prisma-client-js"
 }
@@ -12,70 +6,60 @@ datasource db {
   provider = "mysql"
 }
 
-//create model
+model Likes {
+  customer_id String    @db.VarChar(100)
+  product_id  String    @db.VarChar(100)
+  customers   customers @relation(fields: [customer_id], references: [id])
+  products    products  @relation(fields: [product_id], references: [id])
+
+  @@id([customer_id, product_id])
+  @@index([product_id], map: "Likes_product_id_fkey")
+}
+
+model categories {
+  id   Int    @id @default(autoincrement())
+  name String @db.VarChar(100)
+}
+
+model comments {
+  id          Int       @id @default(autoincrement())
+  title       String
+  description String?
+  customer_id String
+  customers   customers @relation(fields: [customer_id], references: [id])
+
+  @@index([customer_id], map: "comments_customer_id_fkey")
+}
+
+model customers {
+  id       String     @id
+  name     String
+  email    String     @unique
+  phone    String     @unique
+  Likes    Likes[]
+  comments comments[]
+  wallet   wallet?
+  products products[] @relation("loves")
+}
+
+model products {
+  id        String      @id
+  name      String
+  price     Int
+  stock     Int
+  category  String
+  Likes     Likes[]
+  customers customers[] @relation("loves")
+}
+
 model sample {
-  id   String @id //primary key
+  id   String @id
   name String
 }
 
-model Customer {
-  id       String    @id
-  name     String
-  email    String    @unique
-  phone    String    @unique
-  wallet   Wallet? // One-to-one relation with Wallet and nullable
-  comments Comment[] // One-to-many relation with Comment
-  likes    Like[]
-  loves    Product[] @relation("loves") // cara implisit tanpa harus menyebutkan tabel penghubung
-
-  @@map("customers") // Map to "customers" table in the database
-}
-
-model Comment {
-  id          Int      @id @default(autoincrement())
-  title       String
-  description String? //allow nullable
-  customer_id String
-  customer    Customer @relation(fields: [customer_id], references: [id])
-
-  @@map("comments")
-}
-
-model Wallet {
-  id          String   @id
+model wallet {
+  id          String    @id
   balance     Int
-  customer_id String   @unique
-  customer    Customer @relation(fields: [customer_id], references: [id]) //define relation
-
-  @@map("wallet")
-}
-
-model Product {
-  id       String     @id
-  name     String
-  price    Int
-  stock    Int
-  category String
-  likedBy  Like[]
-  lovedBy  Customer[] @relation("loves")
-
-  @@map("products")
-}
-
-model Categories {
-  id   Int    @id @default(autoincrement())
-  name String @db.VarChar(100)
-
-  @@map("categories")
-}
-
-//table untuk relasi many-to-many antara Customer dan Product
-model Like {
-  customer_id String   @db.VarChar(100)
-  product_id  String   @db.VarChar(100)
-  customer    Customer @relation(fields: [customer_id], references: [id])
-  product     Product  @relation(fields: [product_id], references: [id])
-
-  @@id([customer_id, product_id]) //definisi id lebih dari satu field
-  @@map("Likes")
+  customer_id String    @unique
+  customers   customers @relation(fields: [customer_id], references: [id])
 }
